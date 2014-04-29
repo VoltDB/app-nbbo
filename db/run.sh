@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 APPNAME="nbbo"
+HOST=localhost
 
 # find voltdb binaries in either installation or distribution directory.
 if [ -n "$(which voltdb 2> /dev/null)" ]; then
@@ -65,7 +66,7 @@ function server() {
     # if a catalog doesn't exist, build one
     if [ ! -f $APPNAME.jar ]; then catalog; fi
     # run the server
-    nohup $VOLTDB create -d deployment.xml -l $LICENSE -H localhost $APPNAME.jar > nohup.log 2>&1 &
+    nohup $VOLTDB create -d deployment.xml -l $LICENSE -H $HOST $APPNAME.jar > nohup.log 2>&1 &
     echo "------------------------------------"
     echo "|  Ctrl-C to stop tailing the log  |"
     echo "------------------------------------"
