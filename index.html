@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>App-nbbo by VoltDB</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>App-nbbo</h1>
+        <p>NBBO Calculation example</p>
+
+        <p class="view"><a href="https://github.com/VoltDB/app-nbbo">View the Project on GitHub <small>VoltDB/app-nbbo</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/VoltDB/app-nbbo/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/VoltDB/app-nbbo/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/VoltDB/app-nbbo">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="voltdb-example-app-national-best-bid--offer-nbbo-calculation" class="anchor" href="#voltdb-example-app-national-best-bid--offer-nbbo-calculation"><span class="octicon octicon-link"></span></a>VoltDB Example App: National Best Bid &amp; Offer (NBBO) Calculation</h1>
+
+<h2>
+<a name="use-case" class="anchor" href="#use-case"><span class="octicon octicon-link"></span></a>Use Case</h2>
+
+<p>Process incoming market data ticks to calculate the NBBO in real-time.</p>
+
+<p>Client generates ticks based on stock listings (with recent end-of-day prices) from NYSE, AMEX, NASDAQ.  These prices are used as starting points, but the tick generation uses a random walk to update price.  Quantities are chosen at random.  This is a very simplistic generator, just meant to test the database workload.</p>
+
+<h2>
+<a name="code-organization" class="anchor" href="#code-organization"><span class="octicon octicon-link"></span></a>Code organization</h2>
+
+<p>The code is divided into projects:</p>
+
+<ul>
+<li>"db": the database project, which contains the schema, stored procedures and other configurations that are compiled into a catalog and run in a VoltDB database.<br>
+</li>
+<li>"client": a java client that generates tick events and records performance metrics.</li>
+</ul><p>See below for instructions on running these applications.  For any questions, 
+please contact <a href="mailto:fieldengineering@voltdb.com">fieldengineering@voltdb.com</a>.</p>
+
+<h2>
+<a name="pre-requisites" class="anchor" href="#pre-requisites"><span class="octicon octicon-link"></span></a>Pre-requisites</h2>
+
+<p>Before running these scripts you need to have VoltDB 4.0 (Enterprise or Community) or later installed, and you should add the voltdb-$(VERSION)/bin directory to your PATH environment variable, for example:</p>
+
+<pre><code>export PATH="$PATH:$HOME/voltdb-ent-4.2/bin"
+</code></pre>
+
+<h2>
+<a name="instructions" class="anchor" href="#instructions"><span class="octicon octicon-link"></span></a>Instructions</h2>
+
+<ol>
+<li>
+<p>Start the database (in the background)</p>
+
+<p>cd db
+./run.sh
+(Ctrl-C)</p>
+</li>
+<li>
+<p>Run the client benchmark application</p>
+
+<p>cd client
+./run.sh</p>
+</li>
+<li>
+<p>To stop the database</p>
+
+<p>voltadmin shutdown</p>
+</li>
+</ol><h2>
+<a name="options" class="anchor" href="#options"><span class="octicon octicon-link"></span></a>Options</h2>
+
+<p>You can control various characteristics of the demo by modifying the parameters passed into the NbboBenchmark java application in the client/run.sh script.</p>
+
+<p>Speed &amp; Duration:</p>
+
+<pre><code>--duration=120                (benchmark duration in seconds)
+--autotune=true               (true = ignore rate limit, run at max throughput until latency is impacted)
+                              (false = run at the specified rate limit)
+--ratelimit=20000             (when autotune=false, run up to this rate of requests/second)
+</code></pre>
+
+<h2>
+<a name="instructions-for-running-on-a-cluster" class="anchor" href="#instructions-for-running-on-a-cluster"><span class="octicon octicon-link"></span></a>Instructions for running on a cluster</h2>
+
+<p>Before running this demo on a cluster, make the following changes:</p>
+
+<ol>
+<li>
+<p>On each server, edit the db/run.sh file to set the HOST variable to the name of the <strong>first</strong> server in the cluster:</p>
+
+<p>HOST=voltserver01</p>
+</li>
+<li>
+<p>On each server, edit db/deployment.xml to change hostcount from 1 to the actual number of servers:</p>
+
+<p></p>
+</li>
+<li>
+<p>On each server, run the start script:</p>
+
+<p>cd db
+./run.sh</p>
+</li>
+<li>
+<p>On one server, Edit the client/run.sh script to set the SERVERS variable to a comma-separated list of the servers in the cluster</p>
+
+<p>SERVERS=voltserver01,voltserver02,voltserver03</p>
+</li>
+<li>
+<p>Run the client script:</p>
+
+<p>cd client
+./run.sh</p>
+</li>
+</ol>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/VoltDB">VoltDB</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
