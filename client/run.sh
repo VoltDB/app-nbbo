@@ -27,7 +27,7 @@ function compile() {
 
 # remove non-source files
 function clean() {
-    rm -rf obj
+    rm -rf obj log
 }
 
 #java -classpath obj:$CLASSPATH:obj -Dlog4j.configuration=file://$VOLTDB_HOME/voltdb/log4j.xml client.Symbols
@@ -45,7 +45,7 @@ function client() {
 	client.NbboBenchmark \
 	--displayinterval=5 \
 	--warmup=5 \
-	--duration=60 \
+	--duration=300 \
 	--ratelimit=20000 \
 	--autotune=true \
 	--latencytarget=3 \

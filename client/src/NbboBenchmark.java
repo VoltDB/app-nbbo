@@ -24,69 +24,70 @@ import org.voltdb.types.TimestampType;
 
 public class NbboBenchmark extends BaseBenchmark {
 
-    private Random rand = new Random();
-    private MathContext mc = new MathContext(2);
-    private BigDecimal bd0 = new BigDecimal(0);
-    private long startTime = new TimestampType(System.currentTimeMillis()*1000).getTime();
+	private Random rand = new Random();
+	private MathContext mc = new MathContext(2);
+	private BigDecimal bd0 = new BigDecimal(0);
+	private long startTime = new TimestampType(System.currentTimeMillis()*1000).getTime();
 
-    Symbols symbols;
-    String[] exchanges = {"AM",
-			  "BO",
-			  "CI",
-			  "IS",
-			  "JA",
-			  "KX",
-			  "MW",
-			  "NA",
-			  "ND",
-			  "NY",
-			  "PB",
-			  "PC",
-			  "WT",
-			  "YB",
-			  "ZB"
-    };
-    int[] sizes = {100,200,500,1000,2000};
-    long seq = 0l;
+	Symbols symbols;
+	String[] exchanges = {"AM",
+	                      "BO",
+	                      "CI",
+	                      "IS",
+	                      "JA",
+	                      "KX",
+	                      "MW",
+	                      "NA",
+	                      "ND",
+	                      "NY",
+	                      "PB",
+	                      "PC",
+	                      "WT",
+	                      "YB",
+	                      "ZB"
+	};
+	int[] sizes = {100,200,500,1000,2000};
+	long seq = 0l;
     
-    // constructor
-    public NbboBenchmark(BenchmarkConfig config) {
-        super(config);
+	// constructor
+	public NbboBenchmark(BenchmarkConfig config) {
+		super(config);
         
-    }
+	}
 
-    public void initialize() throws Exception {
-	symbols = new Symbols();
-	symbols.loadFile("data/NYSE.csv");
-    }
+	public void initialize() throws Exception {
+		symbols = new Symbols();
+		symbols.loadFile("data/NYSE.csv");
+		symbols.loadFile("data/NASDAQ.csv");
+		symbols.loadFile("data/AMEX.csv");
+	}
 
-    public void iterate() throws Exception {
+	public void iterate() throws Exception {
 
-	Symbols.Symbol s = symbols.getRandom();
-	int bid = (int)Math.round(s.price * (1-rand.nextFloat()/100));
-	String exch = exchanges[rand.nextInt(exchanges.length)];
+		Symbols.Symbol s = symbols.getRandom();
+		int ask = (int)Math.round(s.price * (1+rand.nextFloat()/20));
+		int bid = (int)Math.round(s.price * (1-rand.nextFloat()/20));
 
-	client.callProcedure(new BenchmarkCallback("ProcessTick"),
-			     "ProcessTick",
-			     s.symbol,
-			     new TimestampType(),
-			     seq++, //seq_number
-			     exch, // exchange
-			     bid, //bid_price
-			     sizes[rand.nextInt(sizes.length)], //bid_size
-			     s.price, //ask_price
-			     sizes[rand.nextInt(sizes.length)] //ask_size
-			     );
-	
-    }
+		String exch = exchanges[rand.nextInt(exchanges.length)];
 
-    public static void main(String[] args) throws Exception {
-        BenchmarkConfig config = BenchmarkConfig.getConfig("NbboBenchmark",args);
+		client.callProcedure(new BenchmarkCallback("ProcessTick"),
+		                     "ProcessTick",
+		                     s.symbol,
+		                     new TimestampType(),
+		                     seq++, //seq_number
+		                     exch, // exchange
+		                     bid, //bid_price
+		                     sizes[rand.nextInt(sizes.length)], //bid_size
+		                     ask, //ask_price
+		                     sizes[rand.nextInt(sizes.length)] //ask_size
+		                     );
+	}
+
+	public static void main(String[] args) throws Exception {
+		BenchmarkConfig config = BenchmarkConfig.getConfig("NbboBenchmark",args);
         
-        BaseBenchmark benchmark = new NbboBenchmark(config);
-        benchmark.runBenchmark();
+		BaseBenchmark benchmark = new NbboBenchmark(config);
+		benchmark.runBenchmark();
 
-	printHeading("Note: The database must be restarted before running this benchmark again.");
-
-    }
+	}
 }

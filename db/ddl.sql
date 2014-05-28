@@ -68,4 +68,11 @@ PARTITION TABLE nbbos ON COLUMN symbol;
 CREATE PROCEDURE FROM CLASS procedures.ProcessTick;
 PARTITION PROCEDURE ProcessTick ON TABLE ticks COLUMN symbol PARAMETER 0;
 
+CREATE PROCEDURE nbbo_symbol AS
+SELECT * FROM nbbos WHERE symbol = ? ORDER BY time desc LIMIT 1;
+PARTITION PROCEDURE nbbo_symbol ON TABLE nbbos COLUMN symbol PARAMETER 0;
+
+CREATE PROCEDURE last_ticks_symbol AS
+SELECT * FROM last_ticks WHERE symbol = ? ORDER BY time desc;
+PARTITION PROCEDURE last_ticks_symbol ON TABLE last_ticks COLUMN symbol PARAMETER 0;
 

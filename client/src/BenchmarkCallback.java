@@ -33,11 +33,11 @@ public class BenchmarkCallback implements ProcedureCallback {
     }
 
     public static void printAllResults() {
-	List<String> l = new ArrayList<String>(procedures.keySet());
-	Collections.sort(l);
-	for (String e : l) {
-	    printProcedureResults(e);
-	}
+		List<String> l = new ArrayList<String>(procedures.keySet());
+		Collections.sort(l);
+		for (String e : l) {
+			printProcedureResults(e);
+		}
     }
 
     public BenchmarkCallback(String procedure, long maxErrors) { 
