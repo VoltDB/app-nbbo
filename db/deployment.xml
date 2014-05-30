@@ -4,4 +4,5 @@
    <httpd enabled="true">
       <jsonapi enabled="true" />
    </httpd>
+   <snapshot prefix="minutely" frequency="1m" retain="2" />
 </deployment>

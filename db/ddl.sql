@@ -73,6 +73,16 @@ SELECT * FROM nbbos WHERE symbol = ? ORDER BY time desc LIMIT 1;
 PARTITION PROCEDURE nbbo_symbol ON TABLE nbbos COLUMN symbol PARAMETER 0;
 
 CREATE PROCEDURE last_ticks_symbol AS
-SELECT * FROM last_ticks WHERE symbol = ? ORDER BY time desc;
+SELECT * FROM last_ticks WHERE symbol = ? ORDER BY exch;
 PARTITION PROCEDURE last_ticks_symbol ON TABLE last_ticks COLUMN symbol PARAMETER 0;
+
+CREATE PROCEDURE last_bids_symbol AS
+SELECT time, exch, bid_size, bid FROM last_ticks WHERE symbol = ? ORDER BY bid desc;
+PARTITION PROCEDURE last_bids_symbol ON TABLE last_ticks COLUMN symbol PARAMETER 0;
+
+CREATE PROCEDURE last_asks_symbol AS
+SELECT time, exch, ask_size, ask FROM last_ticks WHERE symbol = ? ORDER BY ask asc;
+PARTITION PROCEDURE last_asks_symbol ON TABLE last_ticks COLUMN symbol PARAMETER 0;
+
+
 

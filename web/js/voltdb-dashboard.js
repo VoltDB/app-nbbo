@@ -28,6 +28,13 @@ function formatDate(n) {
     return new Date(n/1000).toUTCString();
 }
 
+function formatDateAsTime(n) {
+    //return new Date(n/1000).toLocaleDateString();
+    var d = new Date(n/1000).toUTCString();
+    var s = d.toString().substring(17,29);
+    return s;
+}
+
 function DrawTable(response, tableName, selectedRow) {
     try {
         var tables = response.results;
