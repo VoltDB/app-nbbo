@@ -46,7 +46,8 @@ CREATE TABLE last_ticks (
   bid                       INTEGER,
   bid_size		    INTEGER,
   ask                       INTEGER,
-  ask_size 		    INTEGER
+  ask_size 		    INTEGER,
+  CONSTRAINT pk_last_ticks PRIMARY KEY (symbol, exch)                       
 );
 PARTITION TABLE last_ticks ON COLUMN symbol;
 CREATE INDEX idx_last_ticks_bid ON last_ticks (symbol,bid,seq);
@@ -61,16 +62,29 @@ CREATE TABLE nbbos (
   bid_exch                  VARCHAR(2),
   ask			    INTEGER,
   asize			    INTEGER,
-  ask_exch		    VARCHAR(2)
+  ask_exch		    VARCHAR(2),
+  CONSTRAINT pk_nbbos PRIMARY KEY (symbol, time, seq)
 );
 PARTITION TABLE nbbos ON COLUMN symbol;
 
 CREATE PROCEDURE FROM CLASS procedures.ProcessTick;
 PARTITION PROCEDURE ProcessTick ON TABLE ticks COLUMN symbol PARAMETER 0;
 
-CREATE PROCEDURE nbbo_symbol AS
+CREATE PROCEDURE nbbo_last_symbol AS
 SELECT * FROM nbbos WHERE symbol = ? ORDER BY time desc LIMIT 1;
-PARTITION PROCEDURE nbbo_symbol ON TABLE nbbos COLUMN symbol PARAMETER 0;
+PARTITION PROCEDURE nbbo_last_symbol ON TABLE nbbos COLUMN symbol PARAMETER 0;
+
+CREATE PROCEDURE nbbo_last_bid_symbol AS
+SELECT bid, bsize, bid_exch, time FROM nbbos WHERE symbol = ? ORDER BY time desc LIMIT 1;
+PARTITION PROCEDURE nbbo_last_bid_symbol ON TABLE nbbos COLUMN symbol PARAMETER 0;
+
+CREATE PROCEDURE nbbo_last_ask_symbol AS
+SELECT ask, asize, ask_exch, time FROM nbbos WHERE symbol = ? ORDER BY time desc LIMIT 1;
+PARTITION PROCEDURE nbbo_last_ask_symbol ON TABLE nbbos COLUMN symbol PARAMETER 0;
+
+CREATE PROCEDURE nbbo_hist_symbol AS
+SELECT * FROM nbbos WHERE symbol = ? and time > TO_TIMESTAMP(Second,SINCE_EPOCH(Second,NOW)-60*5) ORDER BY time desc;
+PARTITION PROCEDURE nbbo_hist_symbol ON TABLE nbbos COLUMN symbol PARAMETER 0;
 
 CREATE PROCEDURE last_ticks_symbol AS
 SELECT * FROM last_ticks WHERE symbol = ? ORDER BY exch;

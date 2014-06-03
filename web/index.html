@@ -14,7 +14,7 @@
     <link href="css/bootstrap-theme.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="demo.css" rel="stylesheet">
+    <link href="css/demo.css" rel="stylesheet">
 
   </head>
 
@@ -24,20 +24,10 @@
     <div class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="">NBBO Demo</a>
+          <a class="navbar-brand" href="http://voltdb.com"><img alt="" src="/img/logo.png" /></a>
+          <a class="navbar-brand" href="http://voltdb.github.io/app-nbbo">NBBO Demo</a>
         </div>
         <div class="navbar-collapse collapse">
-
-          <!-- <ul class="nav navbar-nav navbar-right"> -->
-
-          <!-- </ul> -->
-
-	  
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Set Refresh <b class="caret"></b></a>
@@ -49,19 +39,15 @@
                 <li><a id="refresh-pause" href="#">Pause</a></li>
               </ul>
             </li>
-
-            <li><a href="http://voltdb.github.io/app-nbbo" target="_blank">on Github</a></li>
-            <li><a href="http://voltdb.com/dev-center/" target="_blank">Powered By VoltDB</a></li>
           </ul>
 	  
 	  <form class="navbar-form navbar-left" onsubmit="return false">
 	    <div class="form-group">
               <!-- <input type="text" class="form-control" id="symbol" placeholder="Symbol" onkeypress="return DontSubmit(event);"> -->
-              <input type="text" class="form-control" id="symbol" placeholder="Symbol">
+              <input type="text" class="form-control" id="symbol" placeholder="Symbol" value="AAPL">
 	    </div>
           </form>
-
-        </div><!--/.nav-collapse -->
+        </div>
       </div>
     </div>
 
@@ -74,20 +60,29 @@
           <div id="nbbo_chart" style="height:200px;"></div>
         </div>
         <div class="col-md-4">
+
+          <br><br>
+          <div id="time" class="pull-right"></div>
+
+          <table class="table table-bordered table-condensed table-hover table-volt" id="table_nbbo_ask">
+          </table>
+
+          <table class="table table-bordered table-condensed table-hover table-volt" id="table_nbbo_bid">
+          </table>
+
         </div>
       </div>
 
 
       <!-- Data tables -->
-      <div class="row">
-        <div class="col-md-8">
-          <!-- <h4>NBBO</h4> -->
-          <table class="table table-bordered table-condensed table-hover table-volt" id="table_nbbo">
-          </table>
-        </div>
-        <div class="col-md-4">
-        </div>
-      </div>
+      <!-- <div class="row"> -->
+      <!--   <div class="col-md-8"> -->
+      <!--     <table class="table table-bordered table-condensed table-hover table-volt" id="table_nbbo"> -->
+      <!--     </table> -->
+      <!--   </div> -->
+      <!--   <div class="col-md-4"> -->
+      <!--   </div> -->
+      <!-- </div> -->
 
       <div class="row">
         <div class="col-md-4">
@@ -107,14 +102,13 @@
 
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.10.2.min.js"></script>
-    <script src="js/voltdb.js"></script>
-    <script src="js/voltdb-dashboard.js"></script>
     <script src="js/jquery.flot.js"></script>
     <script src="js/jquery.flot.time.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/holder.js"></script>
-    <script src="demo.js"></script>
-
+    <script src="js/voltdb.js"></script>
+    <script src="js/voltdb-dashboard.js"></script>
+    <script src="js/demo.js"></script>
     
   </body>
 </html>

@@ -52,6 +52,9 @@ public class BenchmarkConfig extends CLIConfig {
     @Option(desc = "Server-side latency target for auto-tuning.")
     int latencytarget = 6;
 
+    @Option(desc = "Report latency for async benchmark run.")
+    boolean latencyreport = false;
+
     @Option(desc = "Filename to write raw summary statistics to.")
     String statsfile = "";
 
@@ -60,16 +63,16 @@ public class BenchmarkConfig extends CLIConfig {
     int sites = 1000;
 
     @Option(desc = "Pages per Site")
-	int pagespersite = 10;
+    int pagespersite = 10;
 
     @Option(desc = "Number of Advertisers")
-	int advertisers = 1000;
+    int advertisers = 1000;
 
     @Option(desc = "Campaigns per Site")
-	int campaignsperadvertiser = 10;
+    int campaignsperadvertiser = 10;
 
     @Option(desc = "Creatives per Campaign")
-	int creativespercampaign = 10;
+    int creativespercampaign = 10;
 
     public BenchmarkConfig() {
     }

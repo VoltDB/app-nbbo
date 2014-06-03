@@ -1,35 +1,44 @@
-var symbol = 'HP';
-console.log('symbol=' + symbol);
+var symbol = 'AAPL';
 
-// connect stored procedure calls with chart or table function
-function RefreshTable1(){
-    con.BeginExecute('nbbo_symbol', 
+// custom chart or table functions
+//var bids = [];
+//var asks = [];
+
+// schedule refresh functions to run periodically
+function RefreshData(){
+    // con.BeginExecute('nbbo_last_symbol', 
+    //                  [symbol], 
+    //                  function(response) {
+    //                      DrawNBBOTable(response,'#table_nbbo')}
+    //                 );
+
+    con.BeginExecute('nbbo_last_ask_symbol', 
                      [symbol], 
                      function(response) {
-                         DrawNBBOTable(response,'#table_nbbo')}
+                         DrawNBBOTable(response,'#table_nbbo_ask')}
                     );
-}
 
-function RefreshTable2(){
+    con.BeginExecute('nbbo_last_bid_symbol', 
+                     [symbol], 
+                     function(response) {
+                         DrawNBBOTable(response,'#table_nbbo_bid')}
+                    );
+
     con.BeginExecute('last_bids_symbol', 
                      [symbol], 
                      function(response) {
                          DrawNBBOTable(response,'#table_last_bids');
                      }
                     );
-}
 
-function RefreshTable3(){
     con.BeginExecute('last_asks_symbol', 
                      [symbol], 
                      function(response) {
                          DrawNBBOTable(response,'#table_last_asks');
                      }
                     );
-}
-
-function RefreshChart1(){
-    con.BeginExecute('nbbo_symbol',
+    
+    con.BeginExecute('nbbo_hist_symbol',
                      [symbol],
                      function(response) { 
                          DrawTimeLinesChart(response,'#nbbo_chart'); 
@@ -38,13 +47,6 @@ function RefreshChart1(){
 
 }
 
-// schedule refresh functions to run periodically
-function RefreshData(){
-    RefreshTable1();
-    RefreshTable2();
-    RefreshTable3();
-    RefreshChart1();
-}
 
 // when you click to select a row
 $('#symbol').change(function(event) {
@@ -56,26 +58,13 @@ $('#symbol').change(function(event) {
     RefreshData();
 });
 
-// function DontSubmit(event) {
-//     if (event.keyCode == 13) {
-// 	return false;
-//     }
-// }
-
-// custom chart or table functions
-var bids = [];
-var asks = [];
-
 function DrawTimeLinesChart(response, placeholder) {
     var tables = response.results;
     var t0 = tables[0];
     var colcount = t0.schema.length;
+    var bids = [];
+    var asks = [];
 
-    if (bids.length > 10)
-	bids.slice(1);
-    if (asks.length > 10)
-	asks.slice(2);
-    
     for(var r=0;r<t0.data.length;r++){ // for each row
         var time = t0.data[r][1]/1000;
         var bid = t0.data[r][3]/10000;
@@ -83,9 +72,7 @@ function DrawTimeLinesChart(response, placeholder) {
         bids.push([time,bid]);
         asks.push([time,ask]);
     }
-    
-    //var bids = [[0,0], [2,3], [3,2], [5,8]];
-    //var asks = [[0,0], [1,5], [3,8], [5,9]];
+
     var askline = { label: "Ask", data: asks };
     var bidline = { label: "Bid", data: bids };
 
@@ -146,3 +133,12 @@ function DrawNBBOTable(response, tableName) {
 
     } catch(x) {}
 }
+
+function startTime() {
+    document.getElementById('time').innerHTML = "Current Time: " + new Date().toUTCString();
+    // repeat every 500ms
+    t = setTimeout(function () {
+        startTime()
+    }, 500);
+}
+startTime();

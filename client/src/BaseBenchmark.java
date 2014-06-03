@@ -168,16 +168,16 @@ public abstract class BaseBenchmark {
 		ClientStats stats = periodicStatsContext.fetchAndResetBaseline().getStats();
 		long time = Math.round((stats.getEndTimestamp() - benchmarkStartTS) / 1000.0);
 
-		System.out.printf("%02d:%02d:%02d ", time / 3600, (time / 60) % 60, time % 60);
-		System.out.printf("Throughput %d/s, ", stats.getTxnThroughput());
-		System.out.printf("Aborts/Failures %d/%d, ",
-						  stats.getInvocationAborts(), stats.getInvocationErrors());
-
-		// cast to stats.getAverageLatency from long to double
-		System.out.printf("Avg/95%% Latency %.2f/%dms\n",
-						  (double)stats.getAverageLatency(),
-						  stats.kPercentileLatency(0.95));
-
+        System.out.printf("%02d:%02d:%02d ", time / 3600, (time / 60) % 60, time % 60);
+        System.out.printf("Throughput %d/s, %d Aborts, %d Failures",
+                          stats.getTxnThroughput(),
+                          stats.getInvocationAborts(),
+                          stats.getInvocationErrors());
+        if(this.config.latencyreport) {
+            System.out.printf(", Avg-95%% Latency %.2f-%.2fms", stats.getAverageLatency(),
+                stats.kPercentileLatencyAsDouble(0.95));
+        }
+        System.out.printf("\n");
 	}
 
 	/**
