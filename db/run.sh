@@ -2,6 +2,7 @@
 
 APPNAME="nbbo"
 HOST=localhost
+DEPLOYMENT=deployment.xml
 
 # find voltdb binaries in either installation or distribution directory.
 if [ -n "$(which voltdb 2> /dev/null)" ]; then
@@ -66,12 +67,18 @@ function server() {
     # if a catalog doesn't exist, build one
     if [ ! -f $APPNAME.jar ]; then catalog; fi
     # run the server
-    nohup $VOLTDB create -d deployment.xml -l $LICENSE -H $HOST $APPNAME.jar > nohup.log 2>&1 &
+    nohup $VOLTDB create -d $DEPLOYMENT -l $LICENSE -H $HOST $APPNAME.jar > nohup.log 2>&1 &
     echo "------------------------------------"
     echo "|  Ctrl-C to stop tailing the log  |"
     echo "------------------------------------"
     tail -f nohup.log
 }
+
+function cluster-server() {
+    export DEPLOYMENT=deployment-cluster.xml
+    server
+}
+
 
 # update catalog on a running database
 function update() {
