@@ -1,4 +1,4 @@
-var symbol = 'AAPL';
+var symbol = 'IBM';
 
 // custom chart or table functions
 //var bids = [];
@@ -6,11 +6,6 @@ var symbol = 'AAPL';
 
 // schedule refresh functions to run periodically
 function RefreshData(){
-    // con.BeginExecute('nbbo_last_symbol', 
-    //                  [symbol], 
-    //                  function(response) {
-    //                      DrawNBBOTable(response,'#table_nbbo')}
-    //                 );
 
     con.BeginExecute('nbbo_last_ask_symbol', 
                      [symbol], 
@@ -45,6 +40,16 @@ function RefreshData(){
                      }
                     );
 
+}
+
+function RefreshStats() {
+    con.BeginExecute('@Statistics',
+                     ['PROCEDUREPROFILE','0'],
+                     function(response) { 
+                         DrawTPSChart(response,'#tps_chart'); 
+                     }
+                    );
+    
 }
 
 
@@ -89,6 +94,8 @@ function DrawTimeLinesChart(response, placeholder) {
 
     $.plot($(placeholder), [askline, bidline], options);
 }
+
+
 
 function DrawNBBOTable(response, tableName) {
     try {

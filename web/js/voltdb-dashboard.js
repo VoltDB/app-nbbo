@@ -17,24 +17,106 @@
 */
 
 var con;
-var intervalId;
+var chartIntervalId;
+var statsIntervalId;
 
-function formatDecimal(n) {
-    return (Math.round(parseFloat(n) * 100) / 100).toFixed(2);
+
+// initialize actions
+$(document).ready(function(){
+
+    // connect to VoltDB HTTP/JSON interface
+    con = VoltDB.AddConnection(location.hostname, 8080, false, null, null, false, (function(connection, success){}));
+
+    // set the chart interval to 1 second default
+    SetChartRefreshInterval(1);
+
+    // set the stats interval to run every 1000 milliseconds
+    statsIntervalId = setInterval(RefreshStats,1000);
+    
+});
+
+// set/reset the chart interval
+function SetChartRefreshInterval(interval) {
+    if (chartIntervalId != null) {
+        clearInterval(chartIntervalId);
+        chartIntervalId = null;
+    }
+    if(interval > 0)
+        chartIntervalId = setInterval(RefreshData, interval*1000);
 }
 
-function formatDate(n) {
-    //return new Date(n/1000).toLocaleDateString();
-    return new Date(n/1000).toUTCString();
+
+// Refresh drop-down
+$('#refresh-1').click(function(e) {
+    e.preventDefault();// prevent the default anchor functionality
+    SetChartRefreshInterval(1);
+});
+$('#refresh-5').click(function(e) {
+    e.preventDefault();// prevent the default anchor functionality
+    SetChartRefreshInterval(5);
+});
+$('#refresh-10').click(function(e) {
+    e.preventDefault();// prevent the default anchor functionality
+    SetChartRefreshInterval(10);
+});
+$('#refresh-pause').click(function(e) {
+    e.preventDefault();// prevent the default anchor functionality
+    SetChartRefreshInterval(-1);
+});
+
+
+// ----------------- Stats Charts -----------------
+
+// this runs every second
+function RefreshStats() {
+    con.BeginExecute('@Statistics',
+                     ['PROCEDUREPROFILE','0'],
+                     function(response) { 
+                         DrawTPSChart(response,'#tps_chart'); 
+                     }
+                    );
+    
+}
+var tpsVals = [];
+var tcount0;
+function DrawTPSChart(response, someDiv) {
+    var tables = response.results;
+    var table0 = tables[0];
+    //var colcount = table0.schema.length;
+    var time = table0.data[0][0]/1000;
+    var tcount1 = 0;
+    for(var r=0;r<table0.data.length;r++){ // for each row
+        //var time = table0.data[r][0]/1000;
+        tcount1 += table0.data[r][3];
+    }
+    var tps;
+    if (tcount0 == null) {
+        tps = 0;
+    } else {
+        tps = tcount1 - tcount0;
+    }
+    tcount0 = tcount1;
+    tpsVals.push([time,tps]);
+
+    var tpsline = { label: "TPS", data: tpsVals };
+
+    var options = {
+        series: {
+	    lines: { show: true, fill: true },
+	    //bars: { show: true, barWidth : 60*1000, fill: true},
+	    points: { show: false }
+        },
+        xaxis: { mode: "time" },
+        yaxis: { position: "right" },
+        legend: { position: 'nw' }
+    };
+
+    $.plot($(someDiv), [tpsline], options);
 }
 
-function formatDateAsTime(n) {
-    //return new Date(n/1000).toLocaleDateString();
-    var d = new Date(n/1000).toUTCString();
-    var s = d.toString().substring(17,29);
-    return s;
-}
 
+
+// Draw a basic HTML table from a VoltTable
 function DrawTable(response, tableName, selectedRow) {
     try {
         var tables = response.results;
@@ -78,41 +160,20 @@ function DrawTable(response, tableName, selectedRow) {
     } catch(x) {}
 }
 
-function SetRefreshInterval(interval) {
-    if (intervalId != null) {
-        clearInterval(intervalId);
-        intervalId = null;
-    }
-    if(interval > 0)
-        intervalId = setInterval(RefreshData, interval*1000);
+// Data Formatting Methods
+function formatDecimal(n) {
+    return (Math.round(parseFloat(n) * 100) / 100).toFixed(2);
 }
 
-$(document).ready(function(){
-    con = VoltDB.AddConnection(location.hostname, 8080, false, null, null, false, (function(connection, success){}));
-    SetRefreshInterval(1);
+function formatDate(n) {
+    //return new Date(n/1000).toLocaleDateString();
+    return new Date(n/1000).toUTCString();
+}
 
-    // $('#table_ad_sum > tbody > tr').click(function() {
-    //     // row was clicked
-    //     console.log("you clicked a row!");
-    // });
-
-});
-
-// Refresh drop-down actions
-$('#refresh-1').click(function(e) {
-    e.preventDefault();// prevent the default anchor functionality
-    SetRefreshInterval(1);
-});
-$('#refresh-5').click(function(e) {
-    e.preventDefault();// prevent the default anchor functionality
-    SetRefreshInterval(5);
-});
-$('#refresh-10').click(function(e) {
-    e.preventDefault();// prevent the default anchor functionality
-    SetRefreshInterval(10);
-});
-$('#refresh-pause').click(function(e) {
-    e.preventDefault();// prevent the default anchor functionality
-    SetRefreshInterval(-1);
-});
+function formatDateAsTime(n) {
+    //return new Date(n/1000).toLocaleDateString();
+    var d = new Date(n/1000).toUTCString();
+    var s = d.toString().substring(17,29);
+    return s;
+}
 
