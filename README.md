@@ -1,11 +1,12 @@
-# VoltDB Example App: National Best Bid & Offer (NBBO) Calculation
+# VoltDB NBBO Example App
 
 Use Case
 --------
-Process incoming market data ticks to calculate the NBBO in real-time.
+NBBO is the National Best Bid and Offer, defined as the lowest available ask price and highest available bid price across the participating markets for a given security.  Brokers should route trade orders to the market with the best price, and by law must guarantee customers the best available price.
 
-Client generates ticks based on stock listings (with recent end-of-day prices) from NYSE, AMEX, NASDAQ.  These prices are used as starting points, but the tick generation uses a random walk to update price.  Quantities are chosen at random.  This is a very simplistic generator, just meant to test the database workload.
+This example app includes a VoltDB database schema that stores each market data tick and automatically inserts a new NBBO record whenever there is a change to the best available bid or ask price.  This can be used to serve the current NBBO or the history of NBBO changes on demand to consumers such as the dashboard or other applications.
 
+The example includes a web dashboard that shows the real-time NBBO for a security and the latest avaialble prices from each exchange.  It also includes a client benchmark application that generates synthetic market data ticks for all of the listed stocks from NYSE, AMEX, and NASDAQ.  The prices are simulated using a random walk algorithm that starts from the end of day closing price that is initially read from a CSV file.  It is not intended to be a realistic simulation of market data, but simply to generate simulated data for demonstration purposes.
 
 Code organization
 -----------------
@@ -13,15 +14,16 @@ The code is divided into projects:
 
 - "db": the database project, which contains the schema, stored procedures and other configurations that are compiled into a catalog and run in a VoltDB database.  
 - "client": a java client that generates tick events and records performance metrics.
+- "web": a simple web server that provides the demo dashboard.
 
 See below for instructions on running these applications.  For any questions, 
 please contact fieldengineering@voltdb.com.
 
 Pre-requisites
 --------------
-Before running these scripts you need to have VoltDB 4.0 (Enterprise or Community) or later installed, and you should add the voltdb-$(VERSION)/bin directory to your PATH environment variable, for example:
+Before running these scripts you need to have VoltDB 4.0 or later installed, and the bin subdirectory should be added to your PATH environment variable.  For example, if you installed VoltDB Enterprise 4.5 in your home directory, you could add it to the PATH with the following command:
 
-    export PATH="$PATH:$HOME/voltdb-ent-4.2/bin"
+    export PATH="$PATH:$HOME/voltdb-ent-4.5/bin"
 
 
 Instructions
@@ -31,16 +33,25 @@ Instructions
 
     cd db
     ./run.sh
-	(Ctrl-C)
      
-2. Run the client benchmark application
+2. Start the web server for the dashboard
+
+    cd web
+    ./run.sh
+
+3. Run the client benchmark application
 
     cd client
     ./run.sh
 
-4. To stop the database
+To stop the database:
 
     voltadmin shutdown
+    
+To stop the web server:
+
+    cd web
+    ./run.sh stop
 
 
 Options
