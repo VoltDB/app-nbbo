@@ -1,6 +1,6 @@
-package client;
+package nbbo;
 
-import client.CsvLineParser;
+import nbbo.CsvLineParser;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -81,7 +81,7 @@ public class Symbols {
 
 	public static void main(String[] args) throws Exception {
 		Symbols s = new Symbols();
-		s.loadFile("data/NYSE.csv");
+		s.loadFile("client/data/NYSE.csv");
 
 		for (int i=0; i<20; i++) {
 			Symbol sym = s.incrementAndGet(100);	    

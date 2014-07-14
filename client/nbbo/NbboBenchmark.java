@@ -15,7 +15,7 @@
  * along with VoltDB.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package client;
+package nbbo;
 
 import java.util.Random;
 import java.math.BigDecimal;
@@ -57,9 +57,9 @@ public class NbboBenchmark extends BaseBenchmark {
 
 	public void initialize() throws Exception {
 		symbols = new Symbols();
-		symbols.loadFile("data/NYSE.csv");
-		symbols.loadFile("data/NASDAQ.csv");
-		symbols.loadFile("data/AMEX.csv");
+		symbols.loadFile("client/data/NYSE.csv");
+		symbols.loadFile("client/data/NASDAQ.csv");
+		symbols.loadFile("client/data/AMEX.csv");
 	}
 
 	public void iterate() throws Exception {
