@@ -1,3 +1,25 @@
+/* This file is part of VoltDB.
+ * Copyright (C) 2008-2014 VoltDB Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
 package nbbo;
 
 //import com.darwinsys.util.*;
@@ -11,15 +33,15 @@ import java.util.*;
  * Excerpted from 'The Practice of Programming'
  * by Brian W. Kernighan and Rob Pike.
  * <p>
- * Included by permission of the http://tpop.awl.com/ web site, 
+ * Included by permission of the http://tpop.awl.com/ web site,
  * which says:
- * "You may use this code for any purpose, as long as you leave 
+ * "You may use this code for any purpose, as long as you leave
  * the copyright notice and book citation attached." I have done so.
  * @author Brian W. Kernighan and Rob Pike (C++ original)
  * @author Ian F. Darwin (translation into Java and removal of I/O)
  * @author Ben Ballard (updates, removal of dependencies)
  */
-public class CsvLineParser {	
+public class CsvLineParser {
 
     public static final char DEFAULT_SEP = ',';
     private static final boolean debug = false;
@@ -44,12 +66,12 @@ public class CsvLineParser {
     protected char fieldSep;
 
     /** parse: break the input String into fields
-     * @return java.util.Iterator containing each field 
+     * @return java.util.Iterator containing each field
      * from the original as a String, in order.
      */
     public Iterator parse(String line) {
         StringBuffer field = new StringBuffer();
-        list.clear();			// discard previous, if any
+        list.clear();           // discard previous, if any
         int p = 0;
 
         if (line.length() == 0) {
@@ -60,7 +82,7 @@ public class CsvLineParser {
         do {
             field.setLength(0);
             if (p < line.length() && line.charAt(p) == '"')
-                p = advQuoted(line, field, ++p);	// skip quote
+                p = advQuoted(line, field, ++p);    // skip quote
             else
                 p = advPlain(line, field, p);
             list.add(field.toString());
@@ -86,7 +108,7 @@ public class CsvLineParser {
             } else if (s.charAt(j) == '"' && j+1 == len) { // end quotes at end of line
                 break; //done
             }
-            field.append(s.charAt(j));	// regular character.
+            field.append(s.charAt(j));  // regular character.
         }
         return j;
     }
@@ -97,7 +119,7 @@ public class CsvLineParser {
 
         j = s.indexOf(fieldSep, i); // look for separator
         if (debug) System.out.println("i = " + i + ", j = " + j);
-        if (j == -1) {               	// none found
+        if (j == -1) {                  // none found
             field.append(s.substring(i));
             return s.length();
         } else {
