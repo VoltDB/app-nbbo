@@ -37,6 +37,7 @@ CREATE TABLE ticks (
   ask_size 		    INTEGER
 );
 PARTITION TABLE ticks ON COLUMN symbol;
+EXPORT TABLE ticks;
 
 CREATE TABLE last_ticks (
   symbol		    VARCHAR(16) NOT NULL,
