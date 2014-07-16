@@ -1,4 +1,4 @@
-README for client package
+README for nbbo client package
 =========================
 
 This java client source is based on the VoltDB example application "voter", specifically the AsyncBenchmark, but refactored to separate boilerplate from application-specific code.
