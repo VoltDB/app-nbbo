@@ -15,7 +15,7 @@
  * along with VoltDB.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package client;
+package nbbo;
 
 import java.util.Random;
 import java.math.BigDecimal;

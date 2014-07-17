@@ -45,7 +45,7 @@ function client() {
 	client.NbboBenchmark \
 	--displayinterval=5 \
 	--warmup=5 \
-	--duration=300 \
+	--duration=30 \
 	--ratelimit=20000 \
 	--autotune=true \
 	--latencytarget=3 \

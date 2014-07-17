@@ -16,11 +16,17 @@ BenchmarkCallback.java
 BenchmarkConfig.java
   - defines the commmand-line arguments for the benchmark
   
-AdTrackingBenchmark.java
+NbboBenchmark.java
   - extends BaseBenchmark.java
   - uses command-line arguments from BenchmarkConfig.java
   - Provides the implementation for application-specific actions:
-     initialize() - executed once, pre-populates inventory and campaigns
-     iterate() - executed at a controlled rate throughout the duration of the benchmark, generates randomized events.
+     initialize() - executed once
+     iterate() - executed at a controlled rate repeatedly
 
-If you were to use this applicatoin as a template, you should only need to copy and modify AdTrackingBenchmark and possibly add options to BenchmarkConfig.
+CsvLineParser.java
+  - simple CSV line parser, used to load stock symbols
+
+Symbols.java
+  - handles loading stock symbols used for synthetic data generation
+
+If you were to use this applicatoin as a template, you should only need to copy and modify NbboBenchmark and possibly add additional command-line parameters to BenchmarkConfig.
