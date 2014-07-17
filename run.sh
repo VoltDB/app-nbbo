@@ -4,6 +4,13 @@ APPNAME="nbbo"
 HOST=localhost
 DEPLOYMENT=deployment.xml
 
+WEB_PORT=8081
+
+# Get the PID from PIDFILE if we don't have one yet.
+if [[ -z "${PID}" && -e web/http.pid ]]; then
+  PID=$(cat web/http.pid);
+fi
+
 # find voltdb binaries in either installation or distribution directory.
 if [ -n "$(which voltdb 2> /dev/null)" ]; then
     VOLTDB_BIN=$(dirname "$(which voltdb)")
@@ -40,38 +47,64 @@ LICENSE="$VOLTDB_VOLTDB/license.xml"
 
 # remove non-source files
 function clean() {
-    rm -rf obj $APPNAME.jar voltdbroot statement-plans log catalog-report.html nohup.log
+    rm -rf voltdbroot statement-plans log catalog-report.html
+    rm web/http.log web/http.pid
+    rm -rf db/obj db/$APPNAME.jar db/nohup.log
+    rm -rf client/obj client/log
+}
+
+function start_web() {
+    if [[ -z "${PID}" ]]; then
+        nohup python -m SimpleHTTPServer $PORT > web/http.log 2>&1 &
+        echo $! > web/http.pid
+    else
+        echo "http server is already running (PID: ${PID})"
+    fi
+}
+
+function stop_web() {
+  if [[ -z "${PID}" ]]; then
+    echo "http server is not running (missing PID)."
+  else
+      kill ${PID}
+      rm web/http.pid
+      echo "stopped http server (PID: ${PID})."
+  fi
 }
 
 # compile any java stored procedures
-function srccompile() {
-    mkdir -p obj
-    SRC=`find src -name "*.java"`
+function compile_procedures() {
+    mkdir -p db/obj
+    SRC=`find db/src -name "*.java"`
     if [ ! -z $SRC ]; then
-	javac -target 1.7 -source 1.7 -classpath $APPCLASSPATH -d obj $SRC
-	# stop if compilation fails
-	if [ $? != 0 ]; then exit; fi
+	javac -target 1.7 -source 1.7 -classpath $APPCLASSPATH -d db/obj $SRC
+        # stop if compilation fails
+        if [ $? != 0 ]; then exit; fi
     fi
 }
 
 # build an application catalog
 function catalog() {
-    srccompile
-    $VOLTDB compile --classpath obj -o $APPNAME.jar ddl.sql
+    compile_procedures
+    $VOLTDB compile --classpath db/obj -o db/$APPNAME.jar db/ddl.sql
     # stop if compilation fails
     if [ $? != 0 ]; then exit; fi
 }
 
 # run the voltdb server locally
 function server() {
-    # if a catalog doesn't exist, build one
-    if [ ! -f $APPNAME.jar ]; then catalog; fi
-    # run the server
-    nohup $VOLTDB create -d $DEPLOYMENT -l $LICENSE -H $HOST $APPNAME.jar > nohup.log 2>&1 &
+    nohup_server
     echo "------------------------------------"
     echo "|  Ctrl-C to stop tailing the log  |"
     echo "------------------------------------"
-    tail -f nohup.log
+    tail -f db/nohup.log
+}
+
+function nohup_server() {
+    # if a catalog doesn't exist, build one
+    if [ ! -f db/$APPNAME.jar ]; then catalog; fi
+    # run the server
+    nohup $VOLTDB create -d db/$DEPLOYMENT -l $LICENSE -H $HOST db/$APPNAME.jar > db/nohup.log 2>&1 &
 }
 
 function cluster-server() {
@@ -79,11 +112,22 @@ function cluster-server() {
     server
 }
 
-
 # update catalog on a running database
 function update() {
     catalog
     voltadmin update $APPNAME.jar deployment.xml
+}
+
+function demo() {
+    nohup_server
+    echo "starting web server..."
+    start_web
+    sleep 5
+    echo "starting client..."
+    sleep 5
+    echo "Boo!"
+    # add client later
+    
 }
 
 function help() {
