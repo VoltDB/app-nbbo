@@ -23,7 +23,23 @@ var statsIntervalId;
 
 // initialize actions
 $(document).ready(function(){
+    $('#loadingModal').modal('show');
+    checkConnection();
+});
 
+function checkConnection() {
+    VoltDB.TestConnection(location.hostname, 8080, false, null, null, false,
+                          function(connected){
+                              if (connected) {
+                                  $('#loadingModal').modal('hide');
+                                  connectToDatabase();
+                              } else {
+                                  checkConnection();
+                              }
+                          });
+}
+
+function connectToDatabase() {
     // connect to VoltDB HTTP/JSON interface
     con = VoltDB.AddConnection(location.hostname, 8080, false, null, null, false, (function(connection, success){}));
 
@@ -32,8 +48,7 @@ $(document).ready(function(){
 
     // set the stats interval to run every 1000 milliseconds
     statsIntervalId = setInterval(RefreshStats,1000);
-    
-});
+}
 
 // set/reset the chart interval
 function SetChartRefreshInterval(interval) {
