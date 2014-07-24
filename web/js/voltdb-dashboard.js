@@ -93,11 +93,19 @@ function RefreshStats() {
     
 }
 var tpsVals = [];
-var tcount0;
+var prevTime = null;
+var tcount0 = null;
 function DrawTPSChart(response, someDiv) {
     var tables = response.results;
     var table0 = tables[0];
     //var colcount = table0.schema.length;
+
+    if (prevTime != null && table0.data[0][0] == prevTime) {
+        // Skip cached old results
+        return;
+    }
+    prevTime = table0.data[0][0];
+
     var time = table0.data[0][0]/1000;
     var tcount1 = 0;
     for(var r=0;r<table0.data.length;r++){ // for each row
