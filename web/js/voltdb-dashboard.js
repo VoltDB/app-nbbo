@@ -123,6 +123,11 @@ function DrawTPSChart(response, someDiv) {
     tcount0 = tcount1;
     tpsVals.push([time,tps]);
 
+    // Only keep the last minute's data to bound memory usage
+    if (tpsVals[tpsVals.length - 1][0] - tpsVals[0][0] > 60000) {
+        tpsVals.shift();
+    }
+
     var tpsline = { label: "TPS", data: tpsVals };
 
     var options = {
