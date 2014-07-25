@@ -108,7 +108,7 @@ function DrawTPSChart(response, someDiv) {
     var durationMs = cTsMs - prevTsMs;
     prevTsMs = cTsMs;
 
-    var time = table0.data[0][0]/1000;
+    var time = table0.data[0][0]; // milliseconds
     var tcount1 = 0;
     for(var r=0;r<table0.data.length;r++){ // for each row
         //var time = table0.data[r][0]/1000;
