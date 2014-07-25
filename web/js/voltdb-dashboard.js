@@ -93,18 +93,20 @@ function RefreshStats() {
     
 }
 var tpsVals = [];
-var prevTime = null;
+var prevTsMs = null;
 var tcount0 = null;
 function DrawTPSChart(response, someDiv) {
     var tables = response.results;
     var table0 = tables[0];
     //var colcount = table0.schema.length;
 
-    if (prevTime != null && table0.data[0][0] == prevTime) {
+    var cTsMs = table0.data[0][0];
+    if (prevTsMs != null && cTsMs == prevTsMs) {
         // Skip cached old results
         return;
     }
-    prevTime = table0.data[0][0];
+    var durationMs = cTsMs - prevTsMs;
+    prevTsMs = cTsMs;
 
     var time = table0.data[0][0]/1000;
     var tcount1 = 0;
@@ -116,7 +118,7 @@ function DrawTPSChart(response, someDiv) {
     if (tcount0 == null) {
         tps = 0;
     } else {
-        tps = tcount1 - tcount0;
+        tps = (tcount1 - tcount0)*1000/durationMs;
     }
     tcount0 = tcount1;
     tpsVals.push([time,tps]);
