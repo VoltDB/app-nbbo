@@ -40,6 +40,9 @@ function checkConnection() {
 }
 
 function connectToDatabase() {
+    // Prepopulate the tps graph with 0s.
+    initTpsVals();
+
     // connect to VoltDB HTTP/JSON interface
     con = VoltDB.AddConnection(location.hostname, 8080, false, null, null, false, (function(connection, success){}));
 
@@ -48,6 +51,18 @@ function connectToDatabase() {
 
     // set the stats interval to run every 1000 milliseconds
     statsIntervalId = setInterval(RefreshStats,1000);
+}
+
+function initTpsVals() {
+    if (tpsVals.length == 0) {
+        var now = (new Date()).getTime();
+        var interval = 1000; // 1 second
+        var ts = now - 60 * 1000;
+        while (ts < now) {
+            tpsVals.push([ts, 0]);
+            ts += interval;
+        }
+    }
 }
 
 // set/reset the chart interval
