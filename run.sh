@@ -164,11 +164,8 @@ function client() {
 function demo() {
     export DEPLOYMENT=deployment-demo.xml
     nohup_server
-    echo "starting web server..."
-    start_web
-    sleep 5
     echo "starting client..."
-    sleep 5
+    sleep 10
     client
 }
 
