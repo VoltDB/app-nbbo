@@ -26,37 +26,29 @@ Before running these scripts you need to have VoltDB 4.0 or later installed, and
     export PATH="$PATH:$HOME/voltdb-ent-4.5/bin"
 
 
-Instructions
-------------
+Demo Instructions
+-----------------
 
-1. Start the database (in the background)
+1. There is only one step to start this example app as a demo on a single server
 
-    cd db
-    ./run.sh
-     
-2. Start the web server for the dashboard
+    ./run.sh demo
 
-    cd web
-    ./run.sh
+2. Open a web browser to http://hostname:8081
 
-3. Run the client benchmark application
+3. To stop the demo:
 
-    cd client
-    ./run.sh
+Stop the client
 
-To stop the database:
+    Ctrl-C
+    
+Stop the database
 
     voltadmin shutdown
-    
-To stop the web server:
-
-    cd web
-    ./run.sh stop
 
 
 Options
 -------
-You can control various characteristics of the demo by modifying the parameters passed into the NbboBenchmark java application in the client/run.sh script.
+You can control various characteristics of the demo by modifying the parameters passed into the NbboBenchmark java application in the "client" function within the run.sh script.
 
 Speed & Duration:
 
@@ -71,7 +63,7 @@ Instructions for running on a cluster
 
 Before running this demo on a cluster, make the following changes:
 
-1. On each server, edit the db/run.sh file to set the HOST variable to the name of the **first** server in the cluster:
+1. On each server, edit the run.sh file to set the HOST variable to the name of the **first** server in the cluster:
     
     HOST=voltserver01
     
@@ -79,19 +71,17 @@ Before running this demo on a cluster, make the following changes:
 
     <cluster hostcount="1" sitesperhost="3" kfactor="0" />
 
-4. On each server, run the start script:
+4. On each server, start the database
 
-    cd db
-	./run.sh
+	./run.sh server
     
-5. On one server, Edit the client/run.sh script to set the SERVERS variable to a comma-separated list of the servers in the cluster
+5. On one server, Edit the run.sh script to set the SERVERS variable to a comma-separated list of the servers in the cluster
 
     SERVERS=voltserver01,voltserver02,voltserver03
     
 6. Run the client script:
 
-	cd client
-	./run.sh
+	./run.sh client
 
 
 
