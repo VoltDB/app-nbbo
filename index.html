@@ -62,42 +62,30 @@ please contact <a href="mailto:fieldengineering@voltdb.com">fieldengineering@vol
 </code></pre>
 
 <h2>
-<a name="instructions" class="anchor" href="#instructions"><span class="octicon octicon-link"></span></a>Instructions</h2>
+<a name="demo-instructions" class="anchor" href="#demo-instructions"><span class="octicon octicon-link"></span></a>Demo Instructions</h2>
 
 <ol>
 <li>
-<p>Start the database (in the background)</p>
+<p>There is only one step to start this example app as a demo on a single server</p>
 
-<p>cd db
-./run.sh</p>
+<p>./run.sh demo</p>
 </li>
-<li>
-<p>Start the web server for the dashboard</p>
+<li><p>Open a web browser to http://hostname:8081</p></li>
+<li><p>To stop the demo:</p></li>
+</ol><p>Stop the client</p>
 
-<p>cd web
-./run.sh</p>
-</li>
-<li>
-<p>Run the client benchmark application</p>
-
-<p>cd client
-./run.sh</p>
-</li>
-</ol><p>To stop the database:</p>
-
-<pre><code>voltadmin shutdown
+<pre><code>Ctrl-C
 </code></pre>
 
-<p>To stop the web server:</p>
+<p>Stop the database</p>
 
-<pre><code>cd web
-./run.sh stop
+<pre><code>voltadmin shutdown
 </code></pre>
 
 <h2>
 <a name="options" class="anchor" href="#options"><span class="octicon octicon-link"></span></a>Options</h2>
 
-<p>You can control various characteristics of the demo by modifying the parameters passed into the NbboBenchmark java application in the client/run.sh script.</p>
+<p>You can control various characteristics of the demo by modifying the parameters passed into the NbboBenchmark java application in the "client" function within the run.sh script.</p>
 
 <p>Speed &amp; Duration:</p>
 
@@ -114,7 +102,7 @@ please contact <a href="mailto:fieldengineering@voltdb.com">fieldengineering@vol
 
 <ol>
 <li>
-<p>On each server, edit the db/run.sh file to set the HOST variable to the name of the <strong>first</strong> server in the cluster:</p>
+<p>On each server, edit the run.sh file to set the HOST variable to the name of the <strong>first</strong> server in the cluster:</p>
 
 <p>HOST=voltserver01</p>
 </li>
@@ -124,21 +112,19 @@ please contact <a href="mailto:fieldengineering@voltdb.com">fieldengineering@vol
 <p></p>
 </li>
 <li>
-<p>On each server, run the start script:</p>
+<p>On each server, start the database</p>
 
-<p>cd db
-./run.sh</p>
+<p>./run.sh server</p>
 </li>
 <li>
-<p>On one server, Edit the client/run.sh script to set the SERVERS variable to a comma-separated list of the servers in the cluster</p>
+<p>On one server, Edit the run.sh script to set the SERVERS variable to a comma-separated list of the servers in the cluster</p>
 
 <p>SERVERS=voltserver01,voltserver02,voltserver03</p>
 </li>
 <li>
 <p>Run the client script:</p>
 
-<p>cd client
-./run.sh</p>
+<p>./run.sh client</p>
 </li>
 </ol>
       </section>
