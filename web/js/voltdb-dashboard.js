@@ -40,6 +40,9 @@ function checkConnection() {
 }
 
 function connectToDatabase() {
+    // Prepopulate the tps graph with 0s.
+    initTpsVals();
+
     // connect to VoltDB HTTP/JSON interface
     con = VoltDB.AddConnection(location.hostname, 8080, false, null, null, false, (function(connection, success){}));
 
@@ -48,6 +51,18 @@ function connectToDatabase() {
 
     // set the stats interval to run every 1000 milliseconds
     statsIntervalId = setInterval(RefreshStats,1000);
+}
+
+function initTpsVals() {
+    if (tpsVals.length == 0) {
+        var now = (new Date()).getTime();
+        var interval = 1000; // 1 second
+        var ts = now - 60 * 1000;
+        while (ts < now) {
+            tpsVals.push([ts, 0]);
+            ts += interval;
+        }
+    }
 }
 
 // set/reset the chart interval
@@ -93,12 +108,22 @@ function RefreshStats() {
     
 }
 var tpsVals = [];
-var tcount0;
+var prevTsMs = null;
+var tcount0 = null;
 function DrawTPSChart(response, someDiv) {
     var tables = response.results;
     var table0 = tables[0];
     //var colcount = table0.schema.length;
-    var time = table0.data[0][0]/1000;
+
+    var cTsMs = table0.data[0][0];
+    if (prevTsMs != null && cTsMs == prevTsMs) {
+        // Skip cached old results
+        return;
+    }
+    var durationMs = cTsMs - prevTsMs;
+    prevTsMs = cTsMs;
+
+    var time = table0.data[0][0]; // milliseconds
     var tcount1 = 0;
     for(var r=0;r<table0.data.length;r++){ // for each row
         //var time = table0.data[r][0]/1000;
@@ -108,10 +133,15 @@ function DrawTPSChart(response, someDiv) {
     if (tcount0 == null) {
         tps = 0;
     } else {
-        tps = tcount1 - tcount0;
+        tps = (tcount1 - tcount0)*1000/durationMs;
     }
     tcount0 = tcount1;
     tpsVals.push([time,tps]);
+
+    // Only keep the last minute's data to bound memory usage
+    if (tpsVals[tpsVals.length - 1][0] - tpsVals[0][0] > 60000) {
+        tpsVals.shift();
+    }
 
     var tpsline = { label: "TPS", data: tpsVals };
 
@@ -121,7 +151,7 @@ function DrawTPSChart(response, someDiv) {
 	    //bars: { show: true, barWidth : 60*1000, fill: true},
 	    points: { show: false }
         },
-        xaxis: { mode: "time" },
+        xaxis: { mode: "time", timezone: "browser", minTickSize: [10, "second"], ticks: 4 },
         yaxis: { position: "right" },
         legend: { position: 'nw' }
     };

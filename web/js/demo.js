@@ -87,7 +87,7 @@ function DrawTimeLinesChart(response, placeholder) {
 	    //bars: { show: true, barWidth : 60*1000, fill: true},
 	    points: { show: false }
         },
-        xaxis: { mode: "time" },
+        xaxis: { mode: "time", timezone: "browser", minTickSize: [20, "second"], ticks: 10 },
         yaxis: { position: "right" },
         legend: { position: 'nw' }
     };
