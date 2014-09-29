@@ -92,8 +92,8 @@ function compile_procedures() {
     mkdir -p db/obj
     CLASSPATH=`ls -1 $VOLTDB_HOME/voltdb/voltdb-*.jar`
     SRC=`find db/src -name "*.java"`
-    if [ ! -z $SRC ]; then
-	javac -classpath $CLASSPATH -d db/obj $SRC
+    if [ ! -z "$SRC" ]; then
+	javac -classpath $CLASSPATH -d db/obj "$SRC"
         # stop if compilation fails
         if [ $? != 0 ]; then exit; fi
     fi
@@ -118,7 +118,7 @@ function server() {
 
 function nohup_server() {
     # if a catalog doesn't exist, build one
-    if [ ! -f db/$APPNAME.jar ]; then catalog; fi
+    if [ ! -f "db/$APPNAME.jar" ]; then catalog; fi
     # run the server
     nohup voltdb create -d db/$DEPLOYMENT -l $LICENSE -H $HOST db/$APPNAME.jar > db/nohup.log 2>&1 &
 }
