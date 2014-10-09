@@ -21,10 +21,16 @@ please contact fieldengineering@voltdb.com.
 
 Pre-requisites
 --------------
-Before running these scripts you need to have VoltDB 4.0 or later installed, and the bin subdirectory should be added to your PATH environment variable.  For example, if you installed VoltDB Enterprise 4.5 in your home directory, you could add it to the PATH with the following command:
 
-    export PATH="$PATH:$HOME/voltdb-ent-4.5/bin"
+Before running these scripts you need to have VoltDB 4.0 or later installed.  If you choose the .tar.gz file distribution, simply untar it to a directory such as your $HOME directory, then add the bin subdirectory to your PATH environment variable.  For example:
 
+    export PATH="$PATH:$HOME/voltdb-ent-4.7/bin"
+
+You may choose to add this to your .bashrc file.
+
+If you installed the .deb or .rpm distribution, the binaries should already be in your PATH.  To verify this, the following command should return a version number:
+
+    voltdb --version
 
 Demo Instructions
 -----------------

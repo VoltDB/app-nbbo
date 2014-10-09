@@ -1,5 +1,5 @@
 -- This file is part of VoltDB.
--- Copyright (C) 2008-2013 VoltDB Inc.
+-- Copyright (C) 2008-2014 VoltDB Inc.
 --
 -------------------- EXAMPLE SQL -----------------------------------------------
 -- CREATE TABLE example_of_types (
@@ -21,7 +21,11 @@
 --  SELECT type, COUNT(*) AS records, SUM(balance)
 --  FROM example_of_types
 --  GROUP BY type;
--- 
+--
+-- CREATE PROCEDURE select_example AS
+-- SELECT name, status FROM example_of_types WHERE id = ?;
+-- PARTITION PROCEDURE select_example ON TABLE example_of_types COLUMN id [PARAMETER 0];
+--
 -- CREATE PROCEDURE FROM CLASS procedures.UpsertSymbol;
 -- PARTITION PROCEDURE UpsertSymbol ON TABLE symbols COLUMN symbol PARAMETER 0;
 ---------------------------------------------------------------------------------
