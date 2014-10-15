@@ -143,7 +143,7 @@ function DrawTPSChart(response, someDiv) {
         tpsVals.shift();
     }
 
-    var tpsline = { label: "TPS", data: tpsVals };
+    var tpsline = { label: "TPS", color: 3, data: tpsVals };
 
     var options = {
         series: {
