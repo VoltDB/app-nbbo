@@ -1,8 +1,4 @@
-var symbol = 'IBM';
-
-// custom chart or table functions
-//var bids = [];
-//var asks = [];
+var symbol = $('#symbol').val();
 
 // schedule refresh functions to run periodically
 function RefreshData(){
@@ -78,8 +74,8 @@ function DrawTimeLinesChart(response, placeholder) {
         asks.push([time,ask]);
     }
 
-    var askline = { label: "Ask", data: asks };
-    var bidline = { label: "Bid", data: bids };
+    var askline = { label: "Ask", color: "#5bc0de", data: asks };
+    var bidline = { label: "Bid", color: "#f89406", data: bids };
 
     var options = {
         series: {
@@ -118,6 +114,7 @@ function DrawNBBOTable(response, tableName) {
         for(var r=0;r<hmt.data.length;r++){ // for each row
             tbodyhtml += '<tr>';
             for (var c=0;c<colcount;c++) { // for each column
+                var style = '';
                 var f = hmt.data[r][c];
 
                 // if type is DECIMAL
@@ -132,7 +129,15 @@ function DrawNBBOTable(response, tableName) {
                 if (hmt.schema[c].type == 11) {
                     f = formatDateAsTime(f);
                 }
-                tbodyhtml += '<td>' + f + '</td>';
+
+                if (r==0 && hmt.schema[c].name == 'BID') {
+                    style=' class="text-warning"';
+                }
+                if (r==0 && hmt.schema[c].name == 'ASK') {
+                    style=' class="text-info"';
+                }
+                
+                tbodyhtml += '<td' + style + '>' + f + '</td>';
             }
             tbodyhtml += '</tr>';
         }
@@ -142,7 +147,7 @@ function DrawNBBOTable(response, tableName) {
 }
 
 function startTime() {
-    document.getElementById('time').innerHTML = "Current Time: " + new Date().toUTCString();
+    document.getElementById('time').innerHTML = new Date().toUTCString();
     // repeat every 500ms
     t = setTimeout(function () {
         startTime()
