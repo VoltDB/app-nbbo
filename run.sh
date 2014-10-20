@@ -148,7 +148,7 @@ function client() {
 	nbbo.NbboBenchmark \
 	--displayinterval=5 \
 	--warmup=5 \
-	--duration=1800 \
+	--duration=900 \
 	--ratelimit=20000 \
 	--autotune=true \
 	--latencytarget=3 \
