@@ -185,6 +185,14 @@ function demo() {
     client
 }
 
+function playback() {
+    compile-client
+    echo "running playback client test..."
+    cd client
+    java -classpath obj:$HOME/voltdb/voltdb/voltdbclient-5.0.2.jar nbbo.PlaybackClient $SERVERS
+    cd ..
+}
+
 function help() {
     echo "Usage: ./run.sh {clean|catalog|server}"
 }

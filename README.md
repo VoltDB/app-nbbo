@@ -50,7 +50,13 @@ Demo Instructions
 Stop the client (if it hasn't already completed)
 
     Ctrl-C
-    
+
+5. Playback Demo (fetching > 50 MB from a table)
+
+    ./run.sh playback  
+
+
+
 Stop the database
 
     voltadmin shutdown
