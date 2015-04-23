@@ -19,7 +19,9 @@ VOLTDB_HOME=$(dirname $(dirname "$(which voltdb)"))
 
 function start_web() {
     stop_web
-    nohup python -m SimpleHTTPServer $WEB_PORT > web/http.log 2>&1 &
+    cd web
+    nohup python -m SimpleHTTPServer $WEB_PORT > http.log 2>&1 &
+    cd .. 
     echo "started demo http server"
 }
 

@@ -16,21 +16,8 @@ public class ProcessTick extends VoltProcedure {
         "?,?,?,?,?,?,?,?" + // 8
         ");");
 
-    // intermediate table (latest price on each exchange for each symbol traded)
-    public final SQLStmt updateLastTick = new SQLStmt(
-        "UPDATE last_ticks SET " +
-	"  symbol = ?," +
-	"  time = ?," +
-	"  seq = ?," +
-	"  exch = ?," +
-	"  bid = ?," +
-	"  bid_size = ?," +
-	"  ask = ?," +
-	"  ask_size = ? " +
-        " WHERE symbol = ? AND exch = ?;");
-
-    public final SQLStmt insertLastTick = new SQLStmt(
-        "INSERT INTO last_ticks VALUES (" +
+    public final SQLStmt upsertLastTick = new SQLStmt(
+        "UPSERT INTO last_ticks VALUES (" +
         "?,?,?,?,?,?,?,?" + // 8
         ");");
 
@@ -73,7 +60,6 @@ public class ProcessTick extends VoltProcedure {
 	if (ask_price > 0)
 	    askPrice = ask_price;
 
-	// Queue tick insert
 	voltQueueSQL(insertTick,
 		     symbol,
 		     time,
@@ -85,20 +71,18 @@ public class ProcessTick extends VoltProcedure {
 		     ask_size
 		     );
 
-	// Queue last_ticks update
-	voltQueueSQL(updateLastTick,
-		     symbol,
-		     time,
-		     seq_number,
-		     exchange,
-		     bidPrice,
-		     bid_size,
-		     askPrice,
-		     ask_size,
-		     symbol,
-		     exchange
+        voltQueueSQL(upsertLastTick,
+                     symbol,
+                     time,
+                     seq_number,
+                     exchange,
+                     bid_price,
+                     bid_size,
+                     ask_price,
+                     ask_size
                      );
 
+        
 	// Queue best bid and ask selects
 	voltQueueSQL(selectMaxBid,symbol);
 	voltQueueSQL(selectMinAsk,symbol);
@@ -106,61 +90,19 @@ public class ProcessTick extends VoltProcedure {
 	// Execute queued statements 
         VoltTable results0[] = voltExecuteSQL();
 
-	// Check if the last_ticks update affected a row, otherwise we'll need to insert later
-        long updateRowsAffected = results0[1].asScalarLong();
-	
-	// Variables for the max bid and ask values
-	VoltTable tb = null;
-	VoltTable ta = null;
-	String bex = "";
-	Integer bid = 0;
-	Integer bsize = 0;
-	String aex = "";
-	Integer ask = 0;
-	Integer asize = 0;
-	
-	if (updateRowsAffected == 1) {
-	    // Use initial select results for best bid and ask
-	    tb = results0[2];
-	    ta = results0[3];
-
-	} else {
-	    // update affected 0 rows, need to insert into last_ticks, then re-run the selects
-
-	    // queue the last_ticks insert
-	    voltQueueSQL(insertLastTick,
-			 symbol,
-			 time,
-			 seq_number,
-			 exchange,
-			 bid_price,
-			 bid_size,
-			 ask_price,
-			 ask_size
-                         );
-
-	    // queue the selects
-	    voltQueueSQL(selectMaxBid,symbol);
-	    voltQueueSQL(selectMinAsk,symbol);
-
-	    // execute queued statements
-	    VoltTable results1[] = voltExecuteSQL();
-
-	    // use the second set of select results for best bid and ask
-	    tb = results1[1];
-	    ta = results1[2];
-	}
-
-	// Read the best bid and ask results
+	// Read the best bid results
+	VoltTable tb = results0[2];
 	tb.advanceRow();
-	bex = tb.getString(0);
-	bid = (int)tb.getLong(1);
-	bsize = (int)tb.getLong(2);
+	String bex = tb.getString(0);
+	Integer bid = (int)tb.getLong(1);
+	Integer bsize = (int)tb.getLong(2);
 
+        // Read the best ask results
+        VoltTable ta = results0[3];
 	ta.advanceRow();
-	aex = ta.getString(0);
-	ask = (int)ta.getLong(1);
-	asize = (int)ta.getLong(2);
+	String aex = ta.getString(0);
+	Integer ask = (int)ta.getLong(1);
+	Integer asize = (int)ta.getLong(2);
 
 	// check if the tick is part of the nbbo
 	if (bex.equals(exchange) || aex.equals(exchange)) {
