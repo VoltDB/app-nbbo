@@ -13,14 +13,25 @@ WEB_PORT=8081
 # CLIENT variables
 SERVERS=localhost
 
-# This script assumes voltdb/bin is in your path
-VOLTDB_HOME=$(dirname $(dirname "$(which voltdb)"))
-
+# set CLASSPATH
+if [ -d "/usr/lib/voltdb" ]; then
+    # .deb or .rpm install
+    PROC_CLASSPATH="$(ls -1 /usr/lib/voltdb/voltdb-*.jar)"
+    CLIENT_CLASSPATH="$(ls -1 /usr/lib/voltdb/voltdbclient-*.jar):$(ls -1 /usr/lib/voltdb/commons-cli-*.jar)"
+elif [ -d "$(dirname $(which voltdb))" ]; then
+    # tar.gz install
+    VOLTDB_HOME=$(dirname $(dirname $(which voltdb)))
+    PROC_CLASSPATH="$(ls -1 $VOLTDB_HOME/voltdb/voltdb-*.jar)"
+    CLIENT_CLASSPATH="$(ls -1 $VOLTDB_HOME/voltdb/voltdbclient-*.jar):$(ls -1 $VOLTDB_HOME/lib/commons-cli-*.jar)"
+else
+    echo "VoltDB library not found.  If you installed with the tar.gz file, you need to add the bin directory to your PATH"
+    exit
+fi
 
 function clean() {
     rm -rf log voltdbroot statement-plans catalog-report.html
     rm -f web/http.log
-    rm -rf db/obj db/log db/procs.jar
+    rm -rf db/obj db/log
     rm -rf client/obj client/log
 }
 
@@ -58,17 +69,18 @@ function wait_for_startup() {
 function compile_procedures() {
     echo "compile_procedures"
     mkdir -p db/obj
-    CLASSPATH=`ls -1 $VOLTDB_HOME/voltdb/voltdb-*.jar`
     SRC=`find db/src -name "*.java"`
     if [ ! -z "$SRC" ]; then
-        javac -classpath $CLASSPATH -d db/obj "$SRC"
+        javac -classpath $PROC_CLASSPATH -d db/obj "$SRC"
     fi
-    jar cf db/procs.jar -C db/obj .
+    jar cf db/procedures.jar -C db/obj .
 }
 
 function init() {
     echo "init"
-    compile_procedures
+    if [ ! -e db/procedures.jar ]; then
+        compile_procedures;
+    fi
     cd db
     sqlcmd < ddl.sql
     cd ..
@@ -80,28 +92,28 @@ function init() {
 
 function compile_client() {
     echo "compile_client"
-    CLASSPATH=`ls -1 $VOLTDB_HOME/voltdb/voltdb-*.jar`
-    CLASSPATH="$CLASSPATH:`ls -1 $VOLTDB_HOME/lib/commons-cli-*.jar`"
+    #CLASSPATH=`ls -1 $VOLTDB_HOME/voltdb/voltdbclient-*.jar`
+    #CLASSPATH="$CLASSPATH:`ls -1 $VOLTDB_HOME/lib/commons-cli-*.jar`"
 
     pushd client
     # compile client
     mkdir -p obj
     SRC=`find src -name "*.java"`
-    javac -Xlint:unchecked -classpath $CLASSPATH -d obj $SRC
+    javac -Xlint:unchecked -classpath $CLIENT_CLASSPATH -d obj $SRC
+    jar cf client.jar -C obj .
+    rm -rf obj
     popd
 }
 function client() {
     echo "client"
-    compile_client
-
-    #CLASSPATH=`ls -1 $VOLTDB_HOME/voltdb/voltdb-*.jar`
-    #CLASSPATH="$CLASSPATH:`ls -1 $VOLTDB_HOME/lib/commons-cli-*.jar`"
+    if [ ! -e client/client.jar ]; then
+        compile_client;
+    fi
 
     cd client
 
     echo "running sync benchmark test..."
-    #java -classpath obj:$CLASSPATH -Dlog4j.configuration=file://$VOLTDB_HOME/voltdb/log4j.xml \
-    java -classpath obj:$CLASSPATH \
+    java -classpath client.jar:$CLIENT_CLASSPATH \
         nbbo.NbboBenchmark \
         --displayinterval=5 \
         --warmup=5 \
