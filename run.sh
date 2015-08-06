@@ -71,7 +71,7 @@ function compile_procedures() {
     mkdir -p db/obj
     SRC=`find db/src -name "*.java"`
     if [ ! -z "$SRC" ]; then
-        javac -classpath $PROC_CLASSPATH -d db/obj "$SRC"
+        javac -classpath $PROC_CLASSPATH -d db/obj $SRC
     fi
     jar cf db/procedures.jar -C db/obj .
 }
