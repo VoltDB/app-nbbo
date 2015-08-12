@@ -103,7 +103,7 @@ PARTITION PROCEDURE last_asks_symbol ON TABLE last_ticks COLUMN symbol PARAMETER
 
 END_BATCH
 
-load classes procs.jar;
+load classes procedures.jar;
 
 CREATE PROCEDURE FROM CLASS procedures.ProcessTick;
 PARTITION PROCEDURE ProcessTick ON TABLE ticks COLUMN symbol PARAMETER 0;
