@@ -148,6 +148,12 @@ function stop_web() {
 ###############################################
 # Demo                                        #
 ###############################################
+# The following two demo functions are used by the Docker package. Don't remove.
+# compile the jars for procs and client code
+function demo-compile() {
+    compile_client
+    compile_procedures
+}
 
 function demo() {
     export DEPLOYMENT=deployment-demo.xml
