@@ -17,12 +17,12 @@ SERVERS=localhost
 if [ -d "/usr/lib/voltdb" ]; then
     # .deb or .rpm install
     PROC_CLASSPATH="$(ls -1 /usr/lib/voltdb/voltdb-*.jar)"
-    CLIENT_CLASSPATH="$(ls -1 /usr/lib/voltdb/voltdbclient-*.jar):$(ls -1 /usr/lib/voltdb/commons-cli-*.jar)"
+    CLIENT_CLASSPATH="$(ls -1 /usr/lib/voltdb/voltdbclient-*.jar):"
 elif [ -d "$(dirname $(which voltdb))" ]; then
     # tar.gz install
     VOLTDB_HOME=$(dirname $(dirname $(which voltdb)))
     PROC_CLASSPATH="$(ls -1 $VOLTDB_HOME/voltdb/voltdb-*.jar)"
-    CLIENT_CLASSPATH="$(ls -1 $VOLTDB_HOME/voltdb/voltdbclient-*.jar):$(ls -1 $VOLTDB_HOME/lib/commons-cli-*.jar)"
+    CLIENT_CLASSPATH="$(ls -1 $VOLTDB_HOME/voltdb/voltdbclient-*.jar):"
 else
     echo "VoltDB library not found.  If you installed with the tar.gz file, you need to add the bin directory to your PATH"
     exit
@@ -93,7 +93,7 @@ function init() {
 function compile_client() {
     echo "compile_client"
     #CLASSPATH=`ls -1 $VOLTDB_HOME/voltdb/voltdbclient-*.jar`
-    #CLASSPATH="$CLASSPATH:`ls -1 $VOLTDB_HOME/lib/commons-cli-*.jar`"
+    #CLASSPATH="$CLASSPATH:"
 
     pushd client
     # compile client
